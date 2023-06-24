@@ -43,7 +43,113 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
-
+const port = 3000;
 app.use(bodyParser.json());
+
+module.exports = app;
+
+/**
+ * id tracker - keep increment for new records
+ * let the id be unused if a record is deleted
+ */
+let uniqueId = '1';
+
+/**
+ * storing all the todos as a map
+ * with key as the id.
+ * 
+ * optimize for insert, read, updates
+ * deletes (check later)
+ */
+let todos = new Map();
+
+// get All todos
+function getHandler(req, res) {
+
+  let allTodos = [];
+  for (let [key, value] of todos) {
+    console.log(key);
+    console.log(value);
+
+    allTodos.push(value);
+  }
+  return res.status(200).send(allTodos);
+}
+app.get("/todos/", getHandler);
+
+// get specific todo
+function getHandlerId(req, res) {
+  let todoElem = todos.get(req.params.id);
+  if (todoElem != undefine) {
+    return res.status(200).send(todoElem);
+  } else {
+    return res.send("Error").status(404);
+  }
+}
+
+// post handler for todos
+function postHandler(req, res) {
+  console.log(req.body);
+
+  todoReq = req.body;
+  let newTodo = {
+    id: uniqueId,
+    title: todoReq.title,
+    completed: todoReq.completed,
+    description: todoReq.description
+  }
+
+  let todoRes = {
+    id: uniqueId
+  }
+
+  todos.set(newTodo.id, newTodo);
+
+  // increment the id for next post
+  // convert to int and then back to string
+  uniqueId = String(Number(uniqueId) + 1);
+
+  res.status(200).send(todoRes);
+
+}
+app.post("/todos", postHandler);
+
+function putHandler(req, res) {
+  let putId = req.params.id;
+  console.log(putId);
+
+  let putElement = todos.get(putId);
+  console.log(putElement);
+
+  if (putElement != undefined) {
+    putElement.title = req.body.title
+    putElement.completed = req.body.completed
+    res.status(200).send("Updated cleanly");
+  } else {
+    res.status(404).send("not found");
+  }
+}
+app.put("/todos/:id", putHandler);
+
+// delete handler
+function deleteHandler(req, res) {
+  let deleteId = req.params.id;
+  let deleteElem = todos.get(deleteId);
+
+  if (deleteElem != undefined) {
+    todos.delete(deleteId);
+    res.status(200).send("Deleted cleanly");
+  } else {
+    res.status(404).send("Element not found");
+  }
+}
+app.delete("/todos/:id", deleteHandler);
+
+
+// start handler for the app server
+function started() {
+  console.log(`TODO app server running on port ${port}`)
+}
+app.listen(port, started);
 
 module.exports = app;
