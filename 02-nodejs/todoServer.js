@@ -68,9 +68,6 @@ function getHandler(req, res) {
 
   let allTodos = [];
   for (let [key, value] of todos) {
-    console.log(key);
-    console.log(value);
-
     allTodos.push(value);
   }
   return res.status(200).send(allTodos);
@@ -80,16 +77,16 @@ app.get("/todos/", getHandler);
 // get specific todo
 function getHandlerId(req, res) {
   let todoElem = todos.get(req.params.id);
-  if (todoElem != undefine) {
+  if (todoElem != undefined) {
     return res.status(200).send(todoElem);
   } else {
-    return res.send("Error").status(404);
+    return res.status(404).send("Error");
   }
 }
+app.get("/todos/:id", getHandlerId);
 
 // post handler for todos
 function postHandler(req, res) {
-  console.log(req.body);
 
   todoReq = req.body;
   let newTodo = {
@@ -109,17 +106,14 @@ function postHandler(req, res) {
   // convert to int and then back to string
   uniqueId = String(Number(uniqueId) + 1);
 
-  res.status(200).send(todoRes);
+  res.status(201).send(todoRes);
 
 }
 app.post("/todos", postHandler);
 
 function putHandler(req, res) {
   let putId = req.params.id;
-  console.log(putId);
-
   let putElement = todos.get(putId);
-  console.log(putElement);
 
   if (putElement != undefined) {
     putElement.title = req.body.title
@@ -150,6 +144,6 @@ app.delete("/todos/:id", deleteHandler);
 function started() {
   console.log(`TODO app server running on port ${port}`)
 }
-app.listen(port, started);
+//app.listen(port, started);
 
 module.exports = app;

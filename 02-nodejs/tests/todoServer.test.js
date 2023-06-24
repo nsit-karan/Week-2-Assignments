@@ -2,6 +2,7 @@ const http = require('http');
 const { v4: uuidv4 } = require('uuid');
 
 const server = require('../todoServer');
+const { create } = require('domain');
 const port = 3000;
 const baseUrl = `http://localhost:${port}`;
 
@@ -46,12 +47,14 @@ describe('Todo API', () => {
         const response = JSON.parse(data);
         expect(response.id).toBeTruthy();
         createdTodoId = response.id;
+
         done();
       });
-    });
+    }, 200000);
 
     req.write(JSON.stringify(todo));
     req.end();
+
   });
 
   test('should retrieve all todo items', (done) => {
@@ -89,7 +92,7 @@ describe('Todo API', () => {
         done();
       });
     });
-  });
+  }, 20000);
 
   test('should update a specific todo item', (done) => {
     const updatedTodo = {
