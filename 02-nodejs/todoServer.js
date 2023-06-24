@@ -144,6 +144,9 @@ app.delete("/todos/:id", deleteHandler);
 function started() {
   console.log(`TODO app server running on port ${port}`)
 }
+
+// uncomment this if you want to try out the todo server
+// should stay commented while running jtests
 //app.listen(port, started);
 
 module.exports = app;
