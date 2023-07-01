@@ -1,0 +1,96 @@
+<head>
+    <title>
+        TODO app !!
+    </title>
+</head>
+<script>
+    function onPress3() {
+        alert("hi");
+    }
+
+    function parsedGetResponse(data) {
+        console.log(data);
+
+        var parentElement = document.getElementById("mainArea");
+
+        // Only for debugging to dump the complete data
+        // parentElement.innerHTML = JSON.stringify(data);
+
+        for (var i = 0; i < data.length; i++) {
+            var childElement = document.createElement("div");
+
+            var grandChild1 = document.createElement("span");
+            grandChild1.innerHTML = data[i].title
+
+            var grandChild2 = document.createElement("span")
+            grandChild2.innerHTML = data[i].description
+
+            var grandChild3 = document.createElement("button")
+            grandChild3.innerHTML = "Delete"
+
+            childElement.appendChild(grandChild1);
+            childElement.appendChild(grandChild2);
+            childElement.appendChild(grandChild3);
+
+            parentElement.appendChild(childElement);
+        }
+
+    }
+
+    function getCallback(resp) {
+        resp.json().then(parsedGetResponse);
+    }
+
+    function getData() {
+        fetch("http://localhost:3000/todos", {
+            method: "GET"
+        }).then(getCallback);
+    }
+
+    // When the page loads, this gets called once
+    getData();
+
+    function parsedPostData(data) {
+        console.log(data);
+    }
+
+    function postCallback(resp) {
+        resp.json().then(parsedPostData);
+    }
+
+    function onPress() {
+
+        var title = document.getElementById("title").value;
+        var description = document.getElementById("description").value;
+
+        fetch("http://localhost:3000/todos", {
+            method: "POST",
+            body: JSON.stringify({
+                title: title,
+                description: description
+            }),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }).then(postCallback);
+    }
+</script>
+
+
+<body>
+
+    <br><br>
+
+    TODO Title
+    <input type="text" id="title"></input>
+    <!-- <button onclick="onPress1()">send todo</button> -->
+    <br><br>
+    Enter description
+    <input type="text" id="description"></intput>
+    <br><br>
+    <button onclick="onPress()">send description</button>
+
+    <div id="mainArea">
+
+    </div>
+</body>
